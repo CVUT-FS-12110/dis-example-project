@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from enum import Enum
 
 
-class ItemState(str, Enum):
+class ProductState(str, Enum):
     ORDERED = "ORDERED"
     READY = "READY"
 
@@ -13,15 +13,15 @@ class OrderState(str, Enum):
     COMPLETED = "COMPLETED"
 
 
-class CreateItemDto(BaseModel):
+class CreateProductDto(BaseModel):
     order_id: int = 1
     product_name: str
-    state: ItemState = ItemState.ORDERED
-
-
-class ItemDto(CreateItemDto):
-    id: int
+    state: ProductState = ProductState.ORDERED
     complexity: int
+
+
+class ProductDto(CreateProductDto):
+    id: int
 
 
 class CreateOrderDto(BaseModel):

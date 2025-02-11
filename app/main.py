@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 
-from app.database import Database, ProductMissingError
-from app.models import UserDto, OrderDto, ItemDto, CreateOrderDto, CreateItemDto, ItemState, OrderState
+from app.database import Database
+from app.models import UserDto, OrderDto, ProductDto, CreateOrderDto, CreateProductDto, ProductState, OrderState
 app = FastAPI()
 
 
@@ -11,9 +11,9 @@ database.add_user(UserDto(name="Bob"))
 
 database.add_order(CreateOrderDto(user_id=1))
 
-database.add_item(CreateItemDto(order_id=1, product_name="bolt"))
-database.add_item(CreateItemDto(order_id=1, product_name="nut"))
-database.add_item(CreateItemDto(order_id=1, product_name="gear"))
+database.add_product(CreateProductDto(order_id=1, product_name="bolt", complexity=1))
+database.add_product(CreateProductDto(order_id=1, product_name="nut", complexity=2))
+database.add_product(CreateProductDto(order_id=1, product_name="gear", complexity=3))
 
 
 # Endpoints for Orders
@@ -51,38 +51,35 @@ def update_order_state(order_id: int, state: OrderState):
 
 
 # Endpoints for Items
-@app.post("/items", response_model=ItemDto, status_code=201)
-def create_item(create_item_dto: CreateItemDto):
+@app.post("/products", response_model=ProductDto, status_code=201)
+def create_product(create_product_dto: CreateProductDto):
     try:
-        database.get_order(create_item_dto.order_id)
+        database.get_order(create_product_dto.order_id)
     except KeyError:
         raise HTTPException(status_code=404, detail="Order not found")
 
+    product = database.add_product(create_product_dto)
+
+    return product
+
+@app.get("/products", response_model=list[ProductDto], status_code=200)
+def list_products():
+    return database.get_products()
+
+@app.get("/orders/{order_id}/products", response_model=list[ProductDto])
+def get_products_by_order_id(order_id: int):
+    products = [product for product in database.get_products() if product.order_id == order_id]
+    return products
+
+@app.put("/products/{product_id}", response_model=ProductDto)
+def update_product_state(product_id: int, state: ProductState):
     try:
-        item = database.add_item(create_item_dto)
-    except ProductMissingError:
-        raise HTTPException(status_code=404, detail="Product not found")
-
-    return item
-
-@app.get("/items", response_model=list[ItemDto], status_code=200)
-def list_items():
-    return database.get_items()
-
-@app.get("/orders/{order_id}/items", response_model=list[ItemDto])
-def get_items_by_order_id(order_id: int):
-    items = [item for item in database.get_items() if item.order_id == order_id]
-    return items
-
-@app.put("/items/{item_id}", response_model=ItemDto)
-def update_item_state(item_id: int, state: ItemState):
-    try:
-        item = database.get_item(item_id)
-        item.state = state
+        product = database.get_product(product_id)
+        product.state = state
     except KeyError:
         raise HTTPException(status_code=404, detail="Item not found")
 
-    return item
+    return product
 
 
 if __name__ == "__main__":
