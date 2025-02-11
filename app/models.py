@@ -25,7 +25,7 @@ class ProductDto(CreateProductDto):
 
 
 class CreateOrderDto(BaseModel):
-    user_id: int = 1
+    customer_id: int = 1
     state: OrderState = OrderState.PENDING
 
 
@@ -33,6 +33,6 @@ class OrderDto(CreateOrderDto):
     id: int
 
 
-class UserDto(BaseModel):
+class CustomerDto(BaseModel):
     id: int = None
     name: str

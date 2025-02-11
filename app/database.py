@@ -1,16 +1,16 @@
-from app.models import UserDto, OrderDto, ProductDto, CreateOrderDto, CreateProductDto
+from app.models import CustomerDto, OrderDto, ProductDto, CreateOrderDto, CreateProductDto
 
 # Mock Database
 class Database:
 
     def __init__(self):
-        self._users = {}
+        self._customers = {}
         self._orders = {}
         self._products = {}
 
         self._order_pk = 1
         self._product_pk = 1
-        self._user_pk = 1
+        self._customer_pk = 1
 
     def add_order(self, create_order: CreateOrderDto) -> OrderDto:
         order = OrderDto(id=self._order_pk, **create_order.model_dump())
@@ -36,14 +36,14 @@ class Database:
     def get_product(self, product_id: int) -> ProductDto:
         return self._products[product_id]
 
-    def add_user(self, user: UserDto) -> UserDto:
-        user.id = self._user_pk
-        self._users[self._user_pk] = user
-        self._user_pk += 1
-        return user
+    def add_customer(self, customer: CustomerDto) -> CustomerDto:
+        customer.id = self._customer_pk
+        self._customers[self._customer_pk] = customer
+        self._customer_pk += 1
+        return customer
 
-    def get_users(self) -> list[UserDto]:
-        return list(self._users.values())
+    def get_customers(self) -> list[CustomerDto]:
+        return list(self._customers.values())
 
-    def get_user(self, user_id: int) -> UserDto:
-        return self._users[user_id]
+    def get_customer(self, customer_id: int) -> CustomerDto:
+        return self._customers[customer_id]

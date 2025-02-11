@@ -1,15 +1,15 @@
 from fastapi import FastAPI, HTTPException
 
 from app.database import Database
-from app.models import UserDto, OrderDto, ProductDto, CreateOrderDto, CreateProductDto, ProductState, OrderState
+from app.models import CustomerDto, OrderDto, ProductDto, CreateOrderDto, CreateProductDto, ProductState, OrderState
 app = FastAPI()
 
 
 database = Database()
-database.add_user(UserDto(name="Alice"))
-database.add_user(UserDto(name="Bob"))
+database.add_customer(CustomerDto(name="Alice"))
+database.add_customer(CustomerDto(name="Bob"))
 
-database.add_order(CreateOrderDto(user_id=1))
+database.add_order(CreateOrderDto(customer_id=1))
 
 database.add_product(CreateProductDto(order_id=1, product_name="bolt", complexity=1))
 database.add_product(CreateProductDto(order_id=1, product_name="nut", complexity=2))
@@ -20,9 +20,9 @@ database.add_product(CreateProductDto(order_id=1, product_name="gear", complexit
 @app.post("/orders", response_model=OrderDto, status_code=201)
 def create_order(create_order_dto: CreateOrderDto):
     try:
-        database.get_user(create_order_dto.user_id)
+        database.get_customer(create_order_dto.customer_id)
     except KeyError:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Customer not found")
 
     order = database.add_order(create_order_dto)
     return order
