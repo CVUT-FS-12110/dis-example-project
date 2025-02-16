@@ -1,3 +1,5 @@
+import time
+
 from pydantic import BaseModel
 from enum import Enum
 
@@ -8,6 +10,7 @@ class ProductState(str, Enum):
 
 
 class OrderState(str, Enum):
+    CREATED = "CREATED"
     PENDING = "PENDING"
     IN_PROGRESS = "IN_PROGRESS"
     COMPLETED = "COMPLETED"
@@ -17,8 +20,7 @@ class CreateProductDto(BaseModel):
     order_id: int = 1
     product_name: str
     state: ProductState = ProductState.ORDERED
-    complexity: int
-
+    timestamp: float = time.time()
 
 class ProductDto(CreateProductDto):
     id: int
@@ -27,12 +29,22 @@ class ProductDto(CreateProductDto):
 class CreateOrderDto(BaseModel):
     customer_id: int = 1
     state: OrderState = OrderState.PENDING
-
+    timestamp: float = time.time()
 
 class OrderDto(CreateOrderDto):
     id: int
 
 
-class CustomerDto(BaseModel):
+class CreateCustomerDto(BaseModel):
+    user_id: int = 1
+
+class CustomerDto(CreateCustomerDto):
     id: int = None
-    name: str
+
+
+class CreateUserDto(BaseModel):
+    username: str
+
+
+class UserDto(CreateUserDto):
+    id: int = None

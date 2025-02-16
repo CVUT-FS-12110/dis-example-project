@@ -1,9 +1,11 @@
+import time
+
 from fastapi import FastAPI, HTTPException
 
 from app.database import Database
-from app.models import CustomerDto, OrderDto, ProductDto, CreateOrderDto, CreateProductDto, ProductState, OrderState
 
 from fastapi.middleware.cors import CORSMiddleware
+from app.models import CreateUserDto, UserDto, CustomerDto, CreateCustomerDto, OrderDto, ProductDto, CreateOrderDto, CreateProductDto, ProductState, OrderState
 app = FastAPI()
 
 
@@ -18,15 +20,28 @@ app.add_middleware(
 
 
 database = Database()
-database.add_customer(CustomerDto(name="Alice"))
-database.add_customer(CustomerDto(name="Bob"))
+
+database.add_user(CreateUserDto(username="Alice"))
+database.add_user(CreateUserDto(username="Bob"))
+
+database.add_customer(CreateCustomerDto(user_id=1))
+database.add_customer(CreateCustomerDto(user_id=2))
 
 database.add_order(CreateOrderDto(customer_id=1))
 
-database.add_product(CreateProductDto(order_id=1, product_name="bolt", complexity=1))
-database.add_product(CreateProductDto(order_id=1, product_name="nut", complexity=2))
-database.add_product(CreateProductDto(order_id=1, product_name="gear", complexity=3))
+database.add_product(CreateProductDto(order_id=1, product_name="bolt"))
+database.add_product(CreateProductDto(order_id=1, product_name="nut"))
+database.add_product(CreateProductDto(order_id=1, product_name="gear"))
 
+# Endpoints for Customers
+@app.post("/customers", response_model=CustomerDto, status_code=201)
+def create_customer(create_customer_dto: CreateCustomerDto):
+    customer = database.add_customer(create_customer_dto)
+    return customer
+
+@app.get("/customers", response_model=CustomerDto, status_code=200)
+def get_customer():
+    return database.get_orders()
 
 # Endpoints for Orders
 @app.post("/orders", response_model=OrderDto, status_code=201)
@@ -62,7 +77,7 @@ def update_order_state(order_id: int, state: OrderState):
     return order
 
 
-# Endpoints for Items
+# Endpoints for Products
 @app.post("/products", response_model=ProductDto, status_code=201)
 def create_product(create_product_dto: CreateProductDto):
     try:
@@ -89,10 +104,9 @@ def update_product_state(product_id: int, state: ProductState):
         product = database.get_product(product_id)
         product.state = state
     except KeyError:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=404, detail="Product not found")
 
     return product
-
 
 if __name__ == "__main__":
     import uvicorn
