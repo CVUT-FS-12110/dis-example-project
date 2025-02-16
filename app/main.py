@@ -2,7 +2,19 @@ from fastapi import FastAPI, HTTPException
 
 from app.database import Database
 from app.models import CustomerDto, OrderDto, ProductDto, CreateOrderDto, CreateProductDto, ProductState, OrderState
+
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (you can specify a list like ["http://localhost:3000"])
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
+
 
 
 database = Database()
