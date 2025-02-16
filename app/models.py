@@ -28,7 +28,7 @@ class ProductDto(CreateProductDto):
 
 class CreateOrderDto(BaseModel):
     customer_id: int = 1
-    state: OrderState = OrderState.PENDING
+    state: OrderState = OrderState.CREATED
     timestamp: float = time.time()
 
 class OrderDto(CreateOrderDto):
