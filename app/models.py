@@ -33,6 +33,16 @@ class OrderDto(CreateOrderDto):
     id: int
 
 
-class CustomerDto(BaseModel):
+class CreateCustomerDto(BaseModel):
+    user_id: int = 1
+
+class CustomerDto(CreateCustomerDto):
     id: int = None
-    name: str
+
+
+class CreateUserDto(BaseModel):
+    username: str
+
+
+class UserDto(CreateUserDto):
+    id: int = None
