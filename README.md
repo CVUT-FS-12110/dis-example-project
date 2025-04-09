@@ -40,4 +40,14 @@ python main.py
 After that you can go to http://localhost:8000/docs to see the API documentation.
 
 
-## TODO
+## Docker
+
+To build the image, run:
+```bash
+docker build -t example-app-api .
+```
+
+Then run the image as container:
+```bash 
+docker run -p 8000:8000 dexample-app-api
+```
