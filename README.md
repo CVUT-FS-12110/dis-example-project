@@ -49,5 +49,5 @@ docker build -t example-app-api .
 
 Then run the image as container:
 ```bash 
-docker run -p 8000:8000 dexample-app-api
+docker run -p 8000:8000 example-app-api
 ```
